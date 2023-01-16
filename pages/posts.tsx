@@ -34,13 +34,11 @@ export default function Posts({
   });
 
   const router = useRouter();
-  const isValid = Object.values(formData).every((value) => value!.length > 0);
+  // const isValid = Object.values(formData).every((value) => value!.length > 0);
 
   const onChangeInput = (e: any) => {
     const { name, value } = e.target;
-
     setFormData({ ...formData, [name]: value });
-    setValid(Object.values(formData).every((value) => value!.length > 0));
   };
   const handlePlacePost = async () => {
     try {
@@ -74,6 +72,7 @@ export default function Posts({
       window.scrollTo(0, 0);
     }
   };
+
   const uploadFile = async (event: any) => {
     try {
       if (!event.target.files || event.target.files.length === 0) {
@@ -97,8 +96,8 @@ export default function Posts({
         throw uploadError;
       }
 
-      formData.thumbnail = `https://loedtoyszcyawzdamuld.supabase.co/storage/v1/object/public/places-bucket/${filePath}`;
-      setValid(Object.values(formData).every((value) => value!.length > 0));
+      const { name, value } = event.target;
+      setFormData({ ...formData, [name]: value });
     } catch (error) {
       alert("Error uploading file!");
       console.log(error);
@@ -106,6 +105,14 @@ export default function Posts({
     }
   };
 
+  useEffect(() => {
+    const validate: Boolean[] = [];
+    const requiredField = ["name", "description", "category_uuid", "thumbnail"];
+    Object.entries(formData).forEach(([key, item]) => {
+      if (requiredField.includes(key)) validate.push(!!(item && item.length));
+    });
+    setValid(!validate.includes(false));
+  }, [formData]);
   return (
     <div className="bg-gray-50">
       <div
@@ -295,13 +302,13 @@ export default function Posts({
                 ) : (
                   <button
                     className={`w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform ${
-                      !isValid ? "bg-sky-500" : "bg-emerald-400 "
+                      !valid ? "bg-sky-500" : "bg-emerald-400 "
                     }  rounded-md  focus:outline-none `}
                     type="button"
                     onClick={() => handlePlacePost()}
-                    disabled={!isValid}
+                    disabled={!valid}
                   >
-                    {!isValid ? "Lengkapi dulu formnya " : "Kirim datanya"}
+                    {!valid ? "Lengkapi dulu formnya " : "Kirim datanya"}
                   </button>
                 )}
               </div>

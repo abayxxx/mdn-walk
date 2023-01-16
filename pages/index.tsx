@@ -23,6 +23,8 @@ export default function Home({
 
   const [loading, setLoading] = useState(true);
   const [filterLoad, setFilterLoad] = useState(false);
+  const [valid, setValid] = useState(false);
+
   const color = [
     "text-blue-800",
     "text-gray-800",
@@ -89,6 +91,7 @@ export default function Home({
   };
   const handleChangeComment = (event: any) => {
     setComment(event.target.value);
+    setValid(comment.length > 0 ? true : false);
   };
   const handleComment = async () => {
     try {
@@ -117,6 +120,10 @@ export default function Home({
   useEffect(() => {
     fetchPlace("all");
   }, []);
+
+  useEffect(() => {
+    setValid(comment.length > 0 ? true : false);
+  }, [comment]);
   if (loading && !filterLoad)
     return (
       <div className="grid h-screen place-items-center">
@@ -160,7 +167,7 @@ export default function Home({
               disini
             </Link>
             . Kalau menurut kamu ini menarik, silahkan share linknya{" "}
-            <a className="text-sky-400" href="#">
+            <a className="text-sky-400" href="https://bit.ly/mdnwalk">
               bit.ly/mdnwalk
             </a>
           </p>
@@ -367,11 +374,14 @@ export default function Home({
                       </button>
                     ) : (
                       <button
-                        className="bg-sky-500 text-white active:bg-sky-600 font-bold  text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                        className={`${
+                          !valid ? "bg-sky-500" : "bg-emerald-400"
+                        } text-white active:bg-sky-600 font-bold  text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150`}
                         type="button"
                         onClick={() => handleComment()}
+                        disabled={!valid}
                       >
-                        Kirim Komentar
+                        {!valid ? "Isi dulu komennya " : "Kirim komennya"}
                       </button>
                     )}
                   </div>
